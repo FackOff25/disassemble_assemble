@@ -1,10 +1,11 @@
 package graph
 
 import (
-	"CourseProjectA/heuristics"
 	"encoding/json"
 	"io/ioutil"
 	"os"
+
+	"github.com/FackOff25/disassemble_assemble/heuristics"
 )
 
 type HeuristicConf struct {

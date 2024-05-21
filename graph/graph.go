@@ -1,6 +1,6 @@
 package graph
 
-import "CourseProjectA/astar"
+import "github.com/FackOff25/disassemble_assemble/astar"
 
 type Edge struct {
 	Target int     `json:"target"`
