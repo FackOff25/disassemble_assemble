@@ -39,6 +39,10 @@ func Read(configPath string) (Graph, error) {
 
 	graph.Nodes = make(map[int]Node)
 	for _, v := range conf.Nodes {
+		for k, edge := range v.Edges {
+			edge.Source = v.Id
+			edge.Target = k
+		}
 		graph.Nodes[v.Id] = v
 	}
 
