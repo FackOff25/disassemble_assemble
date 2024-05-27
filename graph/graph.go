@@ -137,3 +137,37 @@ func IsEqualNodeMaps(a, b map[int]Node) bool {
 func IsEqualGraphs(a, b Graph) bool {
 	return IsEqualNodeMaps(a.Nodes, b.Nodes)
 }
+
+func (g Graph) RemoveNodes(nodes []Node) {
+	for _, node := range nodes {
+		delete(g.Nodes, node.Id)
+	}
+}
+
+func (g Graph) RemoveEdges(edges []Edge) {
+	for _, edge := range edges {
+		node, ok := g.Nodes[edge.Source]
+		if ok {
+			delete(node.Edges, edge.Target)
+		}
+		node, ok = g.Nodes[edge.Target]
+		if ok {
+			delete(node.Edges, edge.Source)
+		}
+	}
+}
+
+func (g Graph) AddEdges(edges []Edge) {
+	for _, edge := range edges {
+		_, ok := g.Nodes[edge.Source]
+		if !ok {
+			panic("No node for edge")
+		}
+		_, ok = g.Nodes[edge.Target]
+		if !ok {
+			panic("No node for edge")
+		}
+		g.Nodes[edge.Source].Edges[edge.Target] = edge
+		g.Nodes[edge.Target].Edges[edge.Source] = edge
+	}
+}
