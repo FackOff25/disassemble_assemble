@@ -1,6 +1,8 @@
 package graph
 
-import "github.com/FackOff25/disassemble_assemble/astar"
+import (
+	"github.com/FackOff25/disassemble_assemble/astar"
+)
 
 type Edge struct {
 	Source int
@@ -51,4 +53,87 @@ func (e Edge) IsEqual(e2 Edge) bool {
 	}
 
 	return false
+}
+
+// unweighted graph comparison
+func EdgeCompare(e1 Edge, e2 Edge) bool {
+	if e1.Source < e1.Target {
+		if e2.Source < e2.Target {
+			if e1.Source == e1.Source {
+				return e1.Weight < e2.Weight
+			} else {
+				return e1.Source < e1.Source
+			}
+		} else {
+			if e1.Source == e1.Target {
+				return e1.Weight < e2.Weight
+			} else {
+				return e1.Source < e1.Target
+			}
+		}
+	} else {
+		if e2.Source < e2.Target {
+			if e1.Target == e1.Source {
+				return e1.Weight < e2.Weight
+			} else {
+				return e1.Target < e1.Source
+			}
+		} else {
+			if e1.Target == e1.Target {
+				return e1.Weight < e2.Weight
+			} else {
+				return e1.Target < e1.Target
+			}
+		}
+	}
+}
+
+func IsEqualEdgeSlices(a, b []Edge) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if !v.IsEqual(b[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+func IsEqualEdgeMaps(a, b map[int]Edge) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if !v.IsEqual(b[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+func (n Node) IsEqual(n2 Node) bool {
+	if n.Id != n2.Id {
+		return false
+	}
+	if !IsEqualEdgeMaps(n.Edges, n2.Edges) {
+		return false
+	}
+	return true
+}
+
+func IsEqualNodeMaps(a, b map[int]Node) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if !v.IsEqual(b[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+func IsEqualGraphs(a, b Graph) bool {
+	return IsEqualNodeMaps(a.Nodes, b.Nodes)
 }
