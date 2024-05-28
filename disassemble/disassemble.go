@@ -8,10 +8,11 @@ import (
 )
 
 type VertexChoseStrategy interface {
-	ChoseVertexes(_graph graph.Graph) []graph.Node
+	ChoseVertexes(_graph graph.Graph, numberToChose int) []graph.Node
 }
 
 type PruningEndStrategy interface {
+	// True if time to stop
 	CheckPruningEnd(_graph graph.Graph) bool
 }
 
@@ -32,9 +33,9 @@ func (ic IterationChanges) ToString() string {
 
 func Disassemble(originalGraph graph.Graph, nodeChoser VertexChoseStrategy, endPruneStrategy PruningEndStrategy, iterationWriter IterationWriter) {
 	iteration := 0
-	for endPruneStrategy.CheckPruningEnd(originalGraph) {
+	for !endPruneStrategy.CheckPruningEnd(originalGraph) {
 		iteration++
-		removingNodes := nodeChoser.ChoseVertexes(originalGraph)
+		removingNodes := nodeChoser.ChoseVertexes(originalGraph, 1)
 		iterationRemovedEdges := make([]graph.Edge, 0)
 		iterationAddedEdges := make([]graph.Edge, 0)
 
@@ -55,5 +56,6 @@ func Disassemble(originalGraph graph.Graph, nodeChoser VertexChoseStrategy, endP
 		}
 
 		iterationWriter.Write(IterationChanges{RemovedNodes: removingNodesInts, RemovedEdges: iterationRemovedEdges, AddedEdges: iterationAddedEdges})
+		//time.Sleep(2 + time.Second)
 	}
 }

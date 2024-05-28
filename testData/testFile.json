@@ -1,0 +1,75 @@
+{
+    "heuristic": {
+        "func": "(source.x - target.x)^2+(source.y-target.y)^2"
+    },
+    "graph": [
+        {
+            "id": 1,
+            "paths": [
+                {
+                    "target": 2,
+                    "weight": 1
+                },
+                {
+                    "target": 4,
+                    "weight": 1
+                }
+            ],
+            "params": {
+                "x": 0,
+                "y": 0 
+            }
+        },
+        {
+            "id": 2,
+            "paths": [
+                {
+                    "target": 3,
+                    "weight": 1
+                },
+                {
+                    "target": 1,
+                    "weight": 1
+                }
+            ],
+            "params": {
+                "x": 1,
+                "y": 0 
+            }
+        },
+        {
+            "id": 3,
+            "paths": [
+                {
+                    "target": 4,
+                    "weight": 3
+                },
+                {
+                    "target": 2,
+                    "weight": 1
+                }
+            ],
+            "params": {
+                "x": 2,
+                "y": 0 
+            }
+        },
+        {
+            "id": 4,
+            "paths": [
+                {
+                    "target": 1,
+                    "weight": 1
+                },
+                {
+                    "target": 3,
+                    "weight": 3
+                }
+            ],
+            "params": {
+                "x": 3,
+                "y": 0 
+            }
+        }
+    ]
+}

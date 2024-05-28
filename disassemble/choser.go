@@ -14,6 +14,9 @@ func (rc RandomChoser) ChoseVertexes(_graph graph.Graph, numberToChose int) []gr
 	counter := 0
 	chosen := make([]graph.Node, numberToChose)
 	for k, v := range _graph.Nodes {
+		if !(counter < numberToChose) {
+			break
+		}
 		if slices.Contains(rc.ExcludeNodes, k) {
 			continue
 		}

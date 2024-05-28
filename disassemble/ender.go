@@ -9,5 +9,5 @@ type NodeNumEnder struct {
 }
 
 func (rc NodeNumEnder) CheckPruningEnd(_graph graph.Graph) bool {
-	return len(_graph.Nodes) > rc.NodeNum
+	return !(len(_graph.Nodes) > rc.NodeNum)
 }

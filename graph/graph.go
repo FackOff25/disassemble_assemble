@@ -1,6 +1,8 @@
 package graph
 
 import (
+	"fmt"
+
 	"github.com/FackOff25/disassemble_assemble/astar"
 )
 
@@ -140,6 +142,9 @@ func IsEqualGraphs(a, b Graph) bool {
 
 func (g Graph) RemoveNodes(nodes []Node) {
 	for _, node := range nodes {
+		for k := range node.Edges {
+			delete(g.Nodes[k].Edges, node.Id)
+		}
 		delete(g.Nodes, node.Id)
 	}
 }
@@ -161,11 +166,11 @@ func (g Graph) AddEdges(edges []Edge) {
 	for _, edge := range edges {
 		_, ok := g.Nodes[edge.Source]
 		if !ok {
-			panic("No node for edge")
+			panic(fmt.Sprintf("No node %d for edge %v", edge.Source, edge))
 		}
 		_, ok = g.Nodes[edge.Target]
 		if !ok {
-			panic("No node for edge")
+			panic(fmt.Sprintf("No node %d for edge %v", edge.Target, edge))
 		}
 		g.Nodes[edge.Source].Edges[edge.Target] = edge
 		g.Nodes[edge.Target].Edges[edge.Source] = edge
