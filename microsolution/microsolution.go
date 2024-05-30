@@ -12,12 +12,11 @@ func SolveOnePath(searchingGraph graph.Graph, sourceNode int, targetNode int, si
 	M := initMatrixM(size)
 	P := initMatrixP(size)
 
-	path, dist, found := astar.Path(searchingGraph.Nodes[sourceNode], searchingGraph.Nodes[targetNode])
+	path, _, found := astar.Path(searchingGraph.Nodes[sourceNode], searchingGraph.Nodes[targetNode])
 	if !found {
 		return M, P
 	}
 
-	fmt.Printf("Path: dist=%f\n", dist)
 	for i, v := range path[1:] {
 		fmt.Println(i)
 		for j := 0; j < i+1; j++ {

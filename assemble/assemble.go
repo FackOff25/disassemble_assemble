@@ -1,6 +1,7 @@
 package assemble
 
 import (
+	"github.com/FackOff25/disassemble_assemble/disassemble"
 	"github.com/FackOff25/disassemble_assemble/graph"
 )
 
@@ -10,14 +11,13 @@ const (
 
 type IterationChanges struct {
 	AddedNodes   []graph.Node
-	RemovedEdges []graph.Edge
+	RemovedEdges []disassemble.Edge
 }
 
 type IteractionReader interface {
 	ReadNextIteration() IterationChanges
 }
 
-/*
 func Assemble(M [][]float64, P [][]int, nodes []int, reader IteractionReader) {
 	for len(M) < len(nodes) {
 		iterationChanges := reader.ReadNextIteration()
@@ -42,7 +42,17 @@ func Assemble(M [][]float64, P [][]int, nodes []int, reader IteractionReader) {
 			}
 		}
 		for _, edge := range iterationChanges.RemovedEdges {
-			previousnessLine := P[edge.Target]
+			previousnessLine := P[edge.TheEdge.Target]
+			for _, node := range nodes {
+				if previousnessLine[node] == edge.TheEdge.Source {
+					previousnessLine[node] = edge.LinkedNode
+				}
+			}
+			for _, v := range iterationChanges.AddedNodes {
+				if previousnessLine[v.Id] == edge.TheEdge.Source {
+					previousnessLine[v.Id] = edge.LinkedNode
+				}
+			}
 		}
 	}
-}*/
+}
