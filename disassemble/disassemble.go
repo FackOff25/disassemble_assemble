@@ -2,6 +2,8 @@ package disassemble
 
 import (
 	"encoding/json"
+	"fmt"
+	"os"
 
 	"github.com/FackOff25/disassemble_assemble/graph"
 	"github.com/FackOff25/disassemble_assemble/pruning"
@@ -38,6 +40,15 @@ func Disassemble(originalGraph graph.Graph, nodeChoser VertexChoseStrategy, endP
 		removingNodes := nodeChoser.ChoseVertexes(originalGraph, 1)
 		iterationRemovedEdges := make([]graph.Edge, 0)
 		iterationAddedEdges := make([]graph.Edge, 0)
+
+		r, err := os.Create("./results/iteration" + fmt.Sprint(iteration) + ".json")
+		if err != nil {
+			fmt.Errorf("Error: %s", err)
+			return
+		}
+		byteStr, _ := json.Marshal(originalGraph)
+		r.Write(byteStr)
+		r.Close()
 
 		for _, removingNode := range removingNodes {
 			pruningSubgraph := pruning.GetNeighbourSubgraph(originalGraph, removingNode)

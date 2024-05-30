@@ -34,34 +34,42 @@ func sortEdgeSlice(slice []graph.Edge) {
 	})
 }
 
+type trianglePruneTestCase struct {
+	Subgraph    graph.Graph
+	MainVertex  int
+	SideVertex1 int
+	SideVertex2 int
+	Removed     []graph.Edge
+	Added       []graph.Edge
+}
+
 func TestTrianglePrune(t *testing.T) {
-	cases := []pruneTestCase{
+	cases := []trianglePruneTestCase{
 		{Subgraph: graph.Graph{Nodes: map[int]graph.Node{
 			1: graph.Node{Id: 1, Edges: map[int]graph.Edge{2: graph.Edge{Source: 1, Target: 2, Weight: 1}, 3: graph.Edge{Source: 1, Target: 3, Weight: 1}}, Params: map[string]interface{}{}},
 			2: graph.Node{Id: 2, Edges: map[int]graph.Edge{1: graph.Edge{Source: 1, Target: 2, Weight: 1}, 3: graph.Edge{Source: 2, Target: 3, Weight: 1}}, Params: map[string]interface{}{}},
 			3: graph.Node{Id: 3, Edges: map[int]graph.Edge{1: graph.Edge{Source: 1, Target: 2, Weight: 1}, 2: graph.Edge{Source: 2, Target: 3, Weight: 1}}, Params: map[string]interface{}{}},
-		}}, Node: 1, Removed: []graph.Edge{}, Added: []graph.Edge{}},
+		}}, MainVertex: 1, SideVertex1: 2, SideVertex2: 3, Removed: []graph.Edge{}, Added: []graph.Edge{}},
 		{Subgraph: graph.Graph{Nodes: map[int]graph.Node{
 			1: graph.Node{Id: 1, Edges: map[int]graph.Edge{2: graph.Edge{Source: 1, Target: 2, Weight: 1}, 3: graph.Edge{Source: 1, Target: 3, Weight: 1}}, Params: map[string]interface{}{}},
 			2: graph.Node{Id: 2, Edges: map[int]graph.Edge{1: graph.Edge{Source: 1, Target: 2, Weight: 1}, 3: graph.Edge{Source: 2, Target: 3, Weight: 6}}, Params: map[string]interface{}{}},
 			3: graph.Node{Id: 3, Edges: map[int]graph.Edge{1: graph.Edge{Source: 1, Target: 3, Weight: 1}, 2: graph.Edge{Source: 2, Target: 3, Weight: 6}}, Params: map[string]interface{}{}},
-		}}, Node: 1, Removed: []graph.Edge{graph.Edge{Source: 2, Target: 3, Weight: 6}}, Added: []graph.Edge{graph.Edge{Source: 2, Target: 3, Weight: 2}}},
+		}}, MainVertex: 1, SideVertex1: 2, SideVertex2: 3, Removed: []graph.Edge{graph.Edge{Source: 2, Target: 3, Weight: 6}}, Added: []graph.Edge{graph.Edge{Source: 2, Target: 3, Weight: 2}}},
 		{Subgraph: graph.Graph{Nodes: map[int]graph.Node{
 			1: graph.Node{Id: 1, Edges: map[int]graph.Edge{2: graph.Edge{Source: 1, Target: 2, Weight: 1}, 3: graph.Edge{Source: 1, Target: 3, Weight: 1}}, Params: map[string]interface{}{}},
 			2: graph.Node{Id: 2, Edges: map[int]graph.Edge{1: graph.Edge{Source: 1, Target: 2, Weight: 1}}, Params: map[string]interface{}{}},
 			3: graph.Node{Id: 3, Edges: map[int]graph.Edge{1: graph.Edge{Source: 1, Target: 3, Weight: 1}}, Params: map[string]interface{}{}},
-		}}, Node: 1, Removed: []graph.Edge{}, Added: []graph.Edge{graph.Edge{Source: 2, Target: 3, Weight: 2}}},
+		}}, MainVertex: 1, SideVertex1: 2, SideVertex2: 3, Removed: []graph.Edge{}, Added: []graph.Edge{graph.Edge{Source: 2, Target: 3, Weight: 2}}},
 		{Subgraph: graph.Graph{Nodes: map[int]graph.Node{
-			1: graph.Node{Id: 1, Edges: map[int]graph.Edge{2: graph.Edge{Source: 1, Target: 2, Weight: 1}, 3: graph.Edge{Source: 1, Target: 3, Weight: 1}, 4: graph.Edge{Source: 1, Target: 4, Weight: 1}}, Params: map[string]interface{}{}},
-			2: graph.Node{Id: 2, Edges: map[int]graph.Edge{1: graph.Edge{Source: 1, Target: 2, Weight: 1}, 4: graph.Edge{Source: 4, Target: 2, Weight: 6}}, Params: map[string]interface{}{}},
-			3: graph.Node{Id: 3, Edges: map[int]graph.Edge{1: graph.Edge{Source: 1, Target: 3, Weight: 1}}, Params: map[string]interface{}{}},
-			4: graph.Node{Id: 4, Edges: map[int]graph.Edge{1: graph.Edge{Source: 1, Target: 4, Weight: 1}, 2: graph.Edge{Source: 4, Target: 2, Weight: 6}}, Params: map[string]interface{}{}},
-		}}, Node: 1, Removed: []graph.Edge{graph.Edge{Source: 4, Target: 2, Weight: 6}}, Added: []graph.Edge{graph.Edge{Source: 2, Target: 3, Weight: 2}, graph.Edge{Source: 2, Target: 4, Weight: 2}, graph.Edge{Source: 4, Target: 3, Weight: 2}}},
+			1: graph.Node{Id: 1, Edges: map[int]graph.Edge{2: graph.Edge{Source: 1, Target: 2, Weight: 1}, 3: graph.Edge{Source: 1, Target: 3, Weight: 4}}, Params: map[string]interface{}{}},
+			2: graph.Node{Id: 2, Edges: map[int]graph.Edge{1: graph.Edge{Source: 1, Target: 2, Weight: 1}, 3: graph.Edge{Source: 2, Target: 3, Weight: 1}}, Params: map[string]interface{}{}},
+			3: graph.Node{Id: 3, Edges: map[int]graph.Edge{1: graph.Edge{Source: 1, Target: 3, Weight: 4}, 2: graph.Edge{Source: 3, Target: 2, Weight: 1}}, Params: map[string]interface{}{}},
+		}}, MainVertex: 1, SideVertex1: 2, SideVertex2: 3, Removed: []graph.Edge{}, Added: []graph.Edge{}},
 	}
 	for i, testCase := range cases {
 		sortEdgeSlice(testCase.Added)
 		sortEdgeSlice(testCase.Removed)
-		resultRemoved, resultAdded := pruneTriangle(testCase.Subgraph, testCase.Node)
+		resultRemoved, resultAdded := pruneTriangle(testCase.Subgraph, testCase.MainVertex, testCase.SideVertex1, testCase.SideVertex2)
 		sortEdgeSlice(resultRemoved)
 		sortEdgeSlice(resultAdded)
 		if !graph.IsEqualEdgeSlices(resultRemoved, testCase.Removed) {
@@ -85,7 +93,7 @@ func TestPrune(t *testing.T) {
 	for i, testCase := range cases {
 		sortEdgeSlice(testCase.Added)
 		sortEdgeSlice(testCase.Removed)
-		resultRemoved, resultAdded := pruneTriangle(testCase.Subgraph, testCase.Node)
+		resultRemoved, resultAdded := RemoveNode(testCase.Subgraph, testCase.Subgraph.Nodes[testCase.Node])
 		sortEdgeSlice(resultRemoved)
 		sortEdgeSlice(resultAdded)
 		if !graph.IsEqualEdgeSlices(resultRemoved, testCase.Removed) {
