@@ -22,10 +22,15 @@ type IterationWriter interface {
 	Write(IterationChanges)
 }
 
+type Edge struct {
+	LinkedNode int        `json:"LinkedNode"`
+	TheEdge    graph.Edge `json:"Edge"`
+}
+
 type IterationChanges struct {
-	RemovedNodes []int        `json:"rn"`
-	RemovedEdges []graph.Edge `json:"re"`
-	AddedEdges   []graph.Edge `json:"ae"`
+	RemovedNodes []graph.Node `json:"removedNodes"`
+	RemovedEdges []Edge       `json:"removedEdges"`
+	AddedEdges   []Edge       `json:"addedEdges"`
 }
 
 func (ic IterationChanges) ToString() string {
@@ -33,13 +38,24 @@ func (ic IterationChanges) ToString() string {
 	return string(byteStr)
 }
 
+func transformEdgeSlice(slice []graph.Edge, node int) []Edge {
+	result := make([]Edge, len(slice))
+	for i, v := range slice {
+		result[i] = Edge{TheEdge: v, LinkedNode: node}
+	}
+	return result
+}
+
 func Disassemble(originalGraph graph.Graph, nodeChoser VertexChoseStrategy, endPruneStrategy PruningEndStrategy, iterationWriter IterationWriter) {
 	iteration := 0
 	for !endPruneStrategy.CheckPruningEnd(originalGraph) {
 		iteration++
 		removingNodes := nodeChoser.ChoseVertexes(originalGraph, 1)
-		iterationRemovedEdges := make([]graph.Edge, 0)
-		iterationAddedEdges := make([]graph.Edge, 0)
+		iterationRemovedEdges := make([]Edge, 0)
+		removingEdges := make([]graph.Edge, 0)
+		iterationAddedEdges := make([]Edge, 0)
+		addingEdges := make([]graph.Edge, 0)
+		removingNodesEdges := make([]Edge, 0)
 
 		r, err := os.Create("./results/iteration" + fmt.Sprint(iteration) + ".json")
 		if err != nil {
@@ -53,20 +69,20 @@ func Disassemble(originalGraph graph.Graph, nodeChoser VertexChoseStrategy, endP
 		for _, removingNode := range removingNodes {
 			pruningSubgraph := pruning.GetNeighbourSubgraph(originalGraph, removingNode)
 			removedEdges, addedEdges := pruning.RemoveNode(pruningSubgraph, removingNode)
-			iterationRemovedEdges = append(iterationRemovedEdges, removedEdges...)
-			iterationAddedEdges = append(iterationAddedEdges, addedEdges...)
+			removingEdges = append(removingEdges, removedEdges...)
+			iterationRemovedEdges = append(iterationRemovedEdges, transformEdgeSlice(removedEdges, removingNode.Id)...)
+			addingEdges = append(addingEdges, addedEdges...)
+			iterationAddedEdges = append(iterationAddedEdges, transformEdgeSlice(addedEdges, removingNode.Id)...)
+			for _, v := range removingNode.Edges {
+				removingNodesEdges = append(removingNodesEdges, Edge{TheEdge: v, LinkedNode: removingNode.Id})
+			}
 		}
 
 		originalGraph.RemoveNodes(removingNodes)
-		originalGraph.RemoveEdges(iterationRemovedEdges)
-		originalGraph.AddEdges(iterationAddedEdges)
+		originalGraph.RemoveEdges(removingEdges)
+		originalGraph.AddEdges(addingEdges)
 
-		removingNodesInts := make([]int, 0)
-		for _, v := range removingNodes {
-			removingNodesInts = append(removingNodesInts, v.Id)
-		}
-
-		iterationWriter.Write(IterationChanges{RemovedNodes: removingNodesInts, RemovedEdges: iterationRemovedEdges, AddedEdges: iterationAddedEdges})
+		iterationWriter.Write(IterationChanges{RemovedNodes: removingNodes, RemovedEdges: iterationRemovedEdges, AddedEdges: iterationAddedEdges})
 		//time.Sleep(2 + time.Second)
 	}
 }
