@@ -17,6 +17,7 @@ type IteractionReader interface {
 	ReadNextIteration() IterationChanges
 }
 
+/*
 func Assemble(M [][]float64, P [][]int, nodes []int, reader IteractionReader) {
 	for len(M) < len(nodes) {
 		iterationChanges := reader.ReadNextIteration()
@@ -44,4 +45,4 @@ func Assemble(M [][]float64, P [][]int, nodes []int, reader IteractionReader) {
 			previousnessLine := P[edge.Target]
 		}
 	}
-}
+}*/

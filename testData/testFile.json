@@ -8,7 +8,7 @@
             "paths": [
                 {
                     "target": 2,
-                    "weight": 1
+                    "weight": 4
                 },
                 {
                     "target": 4,
@@ -33,7 +33,7 @@
                 },
                 {
                     "target": 1,
-                    "weight": 1
+                    "weight": 4
                 }
             ],
             "params": {
