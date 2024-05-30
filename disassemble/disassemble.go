@@ -2,8 +2,6 @@ package disassemble
 
 import (
 	"encoding/json"
-	"fmt"
-	"os"
 
 	"github.com/FackOff25/disassemble_assemble/graph"
 	"github.com/FackOff25/disassemble_assemble/pruning"
@@ -33,6 +31,18 @@ type IterationChanges struct {
 	AddedEdges   []Edge       `json:"addedEdges"`
 }
 
+type IdToNum map[int]int
+
+func MakeIdToNum(originalGraph graph.Graph) IdToNum {
+	result := make(IdToNum)
+	counter := 0
+	for k := range originalGraph.Nodes {
+		result[k] = counter
+		counter++
+	}
+	return result
+}
+
 func (ic IterationChanges) ToString() string {
 	byteStr, _ := json.Marshal(ic)
 	return string(byteStr)
@@ -56,15 +66,6 @@ func Disassemble(originalGraph graph.Graph, nodeChoser VertexChoseStrategy, endP
 		iterationAddedEdges := make([]Edge, 0)
 		addingEdges := make([]graph.Edge, 0)
 		removingNodesEdges := make([]Edge, 0)
-
-		r, err := os.Create("./results/iteration" + fmt.Sprint(iteration) + ".json")
-		if err != nil {
-			fmt.Errorf("Error: %s", err)
-			return
-		}
-		byteStr, _ := json.Marshal(originalGraph)
-		r.Write(byteStr)
-		r.Close()
 
 		for _, removingNode := range removingNodes {
 			pruningSubgraph := pruning.GetNeighbourSubgraph(originalGraph, removingNode)

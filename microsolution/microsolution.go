@@ -1,16 +1,15 @@
 package microsolution
 
 import (
-	"fmt"
-
 	"github.com/FackOff25/disassemble_assemble/assemble"
 	"github.com/FackOff25/disassemble_assemble/astar"
+	"github.com/FackOff25/disassemble_assemble/disassemble"
 	"github.com/FackOff25/disassemble_assemble/graph"
 )
 
-func SolveOnePath(searchingGraph graph.Graph, sourceNode int, targetNode int, size int) ([][]float64, [][]int) {
-	M := initMatrixM(size)
-	P := initMatrixP(size)
+func SolveOnePath(searchingGraph graph.Graph, idToNum disassemble.IdToNum, sourceNode int, targetNode int) ([][]float64, [][]int) {
+	M := initMatrixM(len(idToNum))
+	P := initMatrixP(len(idToNum))
 
 	path, _, found := astar.Path(searchingGraph.Nodes[sourceNode], searchingGraph.Nodes[targetNode])
 	if !found {
@@ -18,10 +17,15 @@ func SolveOnePath(searchingGraph graph.Graph, sourceNode int, targetNode int, si
 	}
 
 	for i, v := range path[1:] {
-		fmt.Println(i)
 		for j := 0; j < i+1; j++ {
-			P[path[j].GetId()-1][v.GetId()-1] = path[i].GetId()
-			M[path[j].GetId()-1][v.GetId()-1] = M[path[j].GetId()-1][path[i].GetId()-1] + searchingGraph.Nodes[path[i].GetId()].Edges[v.GetId()].Weight
+			pathJNum := idToNum[path[j].GetId()]
+			pathINum := idToNum[path[i].GetId()]
+			vNum := idToNum[v.GetId()]
+
+			P[pathJNum][vNum] = pathINum
+			P[vNum][pathJNum] = idToNum[path[j+1].GetId()]
+			M[pathJNum][vNum] = M[pathJNum][pathINum] + searchingGraph.Nodes[path[i].GetId()].Edges[v.GetId()].Weight
+			M[vNum][pathJNum] = M[pathJNum][vNum]
 		}
 	}
 
