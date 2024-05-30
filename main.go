@@ -12,6 +12,21 @@ import (
 	"github.com/FackOff25/disassemble_assemble/microsolution"
 )
 
+const (
+	testFile      = "./testData/testFile.json"
+	iterationFile = "./results/iterations.txt"
+	resultFile    = "./results/result.json"
+	idToNumFile   = "./results/idToNum.txt"
+	mMatrixFile   = "./results/M.txt"
+	pMatrixFile   = "./results/P.txt"
+)
+
+func errorCheck(err error) {
+	if err != nil {
+		panic(fmt.Sprintf("Error: %s", err))
+	}
+}
+
 func writeFloatMatrix(matrix [][]float64, file string) {
 	f, err := os.Create(file)
 	if err != nil {
@@ -31,9 +46,7 @@ func writeFloatMatrix(matrix [][]float64, file string) {
 
 func writeIntMatrix(matrix [][]int, file string) {
 	f, err := os.Create(file)
-	if err != nil {
-		panic(err)
-	}
+	errorCheck(err)
 
 	for i := range matrix {
 		str := fmt.Sprintf("%d", matrix[i][0])
@@ -46,27 +59,23 @@ func writeIntMatrix(matrix [][]int, file string) {
 	f.Close()
 }
 
-func main() {
-	graphConfig, err := graph.Read("./testData/testFile.json")
-	//fmt.Printf("%#v\n", graphConfig)
-	if err != nil {
-		fmt.Errorf("Error: %s", err)
-		return
-	}
-
-	f, err := os.Create("./results/iterations.txt")
-	if err != nil {
-		fmt.Errorf("Error: %s", err)
-		return
-	}
-
+func makeIdToNum(graphConfig graph.Graph, idToNumFile string) disassemble.IdToNum {
 	idToNum := disassemble.MakeIdToNum(graphConfig)
-	fmt.Println(idToNum)
+	m, err := os.Create(idToNumFile)
+	errorCheck(err)
+	m.WriteString(fmt.Sprintf("%v", idToNum))
+	m.Close()
+	return idToNum
+}
+
+func doDisassemble(graphConfig graph.Graph, iterationFile, resultfile string) {
+	f, err := os.Create(iterationFile)
+	errorCheck(err)
 
 	slice := make([]string, 1)
 
 	randomChoser := disassemble.RandomChoser{ExcludeNodes: []int{1, 2}}
-	ender := disassemble.NodeNumEnder{NodeNum: 2}
+	ender := disassemble.NodeNumEnder{NodeNum: 3}
 	iterationWriter := disassemble.StringSliceWriter{Slice: slice}
 
 	disassemble.Disassemble(graphConfig, randomChoser, ender, iterationWriter)
@@ -74,21 +83,15 @@ func main() {
 	f.WriteString(iterationWriter.Slice[0])
 	f.Close()
 
-	r, err := os.Create("./results/result.json")
-	if err != nil {
-		fmt.Errorf("Error: %s", err)
-		return
-	}
+	r, err := os.Create(resultfile)
+	errorCheck(err)
 	byteStr, _ := json.Marshal(graphConfig)
 	r.Write(byteStr)
+}
 
-	M, P := microsolution.SolveOnePath(graphConfig, idToNum, 1, 2)
-
-	f, err = os.Open("./results/iterations.txt")
-	if err != nil {
-		fmt.Errorf("Error: %s", err)
-		return
-	}
+func doAssemble(M [][]float64, P [][]int, graphConfig graph.Graph, idToNum disassemble.IdToNum, iterationFile, mMatrixFile, pMatrixFile string) {
+	f, err := os.Open(iterationFile)
+	errorCheck(err)
 	iterationReader := assemble.StraightScannerIterationReader{Reader: bufio.NewReader(f)}
 
 	remainNodes := make([]int, len(graphConfig.Nodes))
@@ -100,22 +103,58 @@ func main() {
 
 	assemble.Assemble(M, P, remainNodes, idToNum, iterationReader)
 
-	writeFloatMatrix(M, "./results/M.txt")
-	writeIntMatrix(P, "./results/P.txt")
-	//fmt.Printf("M: \n %v\n", M)
-	//fmt.Printf("P: \n %v\n", P)
-	/*
-		path, dist, found := astar.Path(graphConfig.Nodes[31], graphConfig.Nodes[25])
+	writeFloatMatrix(M, mMatrixFile)
+	writeIntMatrix(P, pMatrixFile)
+}
 
-		if !found {
-			fmt.Printf("No path\n")
-			return
-		}
+func revertMap(ogMap map[int]int) map[int]int {
+	result := make(map[int]int, len(ogMap))
+	for k, v := range ogMap {
+		result[v] = k
+	}
+	return result
+}
 
-		fmt.Printf("Path: dist=%f\n", dist)
-		fmt.Printf("%d", path[0].GetId())
-		for _, v := range path[1:] {
-			fmt.Printf("->%d", v.GetId())
+func reWritePmatrix(P [][]int, idToNum disassemble.IdToNum, pMatrixFile string) {
+	reverter := revertMap(idToNum)
+	f, err := os.Create(pMatrixFile)
+	errorCheck(err)
+
+	str := "\t"
+	for i := range P {
+		str += fmt.Sprintf("\t%d", reverter[i])
+	}
+	str += "\n"
+	f.WriteString(str)
+
+	for i := range P {
+		str = fmt.Sprintf("%d\t", reverter[i])
+		for j := range P[i] {
+			id, ok := reverter[P[i][j]]
+			if !ok {
+				str += fmt.Sprintf("\t%d", P[i][j])
+			} else {
+				str += fmt.Sprintf("\t%d", reverter[id])
+			}
+
 		}
-		fmt.Printf("\n")*/
+		str += "\n"
+		f.WriteString(str)
+	}
+}
+
+func main() {
+	graphConfig, err := graph.Read(testFile)
+	errorCheck(err)
+	//fmt.Printf("%#v\n", graphConfig)
+
+	idToNum := makeIdToNum(graphConfig, idToNumFile)
+
+	doDisassemble(graphConfig, iterationFile, resultFile)
+
+	M, P := microsolution.SolveOnePath(graphConfig, idToNum, 1, 2)
+
+	doAssemble(M, P, graphConfig, idToNum, iterationFile, mMatrixFile, pMatrixFile)
+
+	reWritePmatrix(P, idToNum, "./results/P2.txt")
 }
