@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	testFile      = "./testData/testFile.json"
+	testFile      = "./testData/testFile3.json"
 	iterationFile = "./results/iterations.txt"
 	resultFile    = "./results/result.json"
 	idToNumFile   = "./results/idToNum.txt"
@@ -68,14 +68,14 @@ func makeIdToNum(graphConfig graph.Graph, idToNumFile string) disassemble.IdToNu
 	return idToNum
 }
 
-func doDisassemble(graphConfig graph.Graph, iterationFile, resultfile string) {
+func doDisassemble(graphConfig graph.Graph, iterationFile, resultfile string, exclude []int, vertexLimit int) {
 	f, err := os.Create(iterationFile)
 	errorCheck(err)
 
 	slice := make([]string, 1)
 
-	randomChoser := disassemble.RandomChoser{ExcludeNodes: []int{1, 2}}
-	ender := disassemble.NodeNumEnder{NodeNum: 3}
+	randomChoser := disassemble.RandomChoser{ExcludeNodes: exclude}
+	ender := disassemble.NodeNumEnder{NodeNum: vertexLimit}
 	iterationWriter := disassemble.StringSliceWriter{Slice: slice}
 
 	disassemble.Disassemble(graphConfig, randomChoser, ender, iterationWriter)
@@ -143,18 +143,37 @@ func reWritePmatrix(P [][]int, idToNum disassemble.IdToNum, pMatrixFile string) 
 	}
 }
 
+func makePath(P [][]int, source, target int, idToNum disassemble.IdToNum) string {
+	reverted := revertMap(idToNum)
+	sourceNum := idToNum[source]
+
+	line := P[sourceNum]
+
+	el := idToNum[target]
+	str := fmt.Sprintf("%d", reverted[el])
+	for el != sourceNum {
+		el = line[el]
+		str = fmt.Sprintf("%d->%s", reverted[el], str)
+	}
+	return str
+}
+
 func main() {
+	source := 1
+	target := 15
+
 	graphConfig, err := graph.Read(testFile)
 	errorCheck(err)
 	//fmt.Printf("%#v\n", graphConfig)
 
 	idToNum := makeIdToNum(graphConfig, idToNumFile)
 
-	doDisassemble(graphConfig, iterationFile, resultFile)
+	doDisassemble(graphConfig, iterationFile, resultFile, []int{target, source}, 5)
 
-	M, P := microsolution.SolveOnePath(graphConfig, idToNum, 1, 2)
+	M, P := microsolution.SolveOnePath(graphConfig, idToNum, source, target)
 
 	doAssemble(M, P, graphConfig, idToNum, iterationFile, mMatrixFile, pMatrixFile)
 
 	reWritePmatrix(P, idToNum, "./results/P2.txt")
+	fmt.Println(makePath(P, source, target, idToNum))
 }
