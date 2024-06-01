@@ -8,7 +8,7 @@
             "paths": [
                 {
                     "target": 2,
-                    "weight": 1
+                    "weight": 1.34
                 },
                 {
                     "target": 3,
@@ -16,7 +16,7 @@
                 },
                 {
                     "target": 4,
-                    "weight": 3
+                    "weight": 1.34
                 }
             ],
             "params": {
@@ -29,11 +29,11 @@
             "paths": [
                 {
                     "target": 1,
-                    "weight": 1
+                    "weight": 1.34
                 },
                 {
                     "target": 3,
-                    "weight": 1
+                    "weight": 1.34
                 }
             ],
             "params": {
@@ -50,15 +50,15 @@
                 },
                 {
                     "target": 2,
-                    "weight": 1
+                    "weight": 1.34
                 },
                 {
                     "target": 4,
-                    "weight": 1
+                    "weight": 1.34
                 },
                 {
                     "target": 5,
-                    "weight": 3
+                    "weight": 1
                 }
             ],
             "params": {
@@ -71,11 +71,11 @@
             "paths": [
                 {
                     "target": 1,
-                    "weight": 3
+                    "weight": 1.34
                 },
                 {
                     "target": 3,
-                    "weight": 1
+                    "weight": 1.34
                 },
                 {
                     "target": 10,
@@ -91,15 +91,15 @@
             "paths": [
                 {
                     "target": 3,
-                    "weight": 3
+                    "weight": 1
                 },
                 {
                     "target": 6,
-                    "weight": 6
+                    "weight": 1.34
                 },
                 {
                     "target": 8,
-                    "weight": 1
+                    "weight": 1.34
                 }
             ],
             "params": {
@@ -112,15 +112,15 @@
             "paths": [
                 {
                     "target": 5,
-                    "weight": 6
+                    "weight": 1.34
                 },
                 {
                     "target": 8,
-                    "weight": 4
+                    "weight": 2
                 },
                 {
                     "target": 7,
-                    "weight": 2
+                    "weight": 1.34
                 }
             ],
             "params": {
@@ -133,11 +133,11 @@
             "paths": [
                 {
                     "target": 6,
-                    "weight": 2
+                    "weight": 1.34
                 },
                 {
                     "target": 8,
-                    "weight": 6
+                    "weight": 1.34
                 }
             ],
             "params": {
@@ -150,15 +150,15 @@
             "paths": [
                 {
                     "target": 5,
-                    "weight": 1
+                    "weight": 1.34
                 },
                 {
                     "target": 6,
-                    "weight": 4
+                    "weight": 2
                 },
                 {
                     "target": 7,
-                    "weight": 6
+                    "weight": 1.34
                 },
                 {
                     "target": 14,
@@ -175,11 +175,11 @@
             "paths": [
                 {
                     "target": 10,
-                    "weight": 1
+                    "weight": 1.34
                 },
                 {
                     "target": 12,
-                    "weight": 1
+                    "weight": 1.34
                 }
             ],
             "params": {
@@ -196,11 +196,11 @@
                 },
                 {
                     "target": 9,
-                    "weight": 1
+                    "weight": 1.34
                 },
                 {
                     "target": 11,
-                    "weight": 5
+                    "weight": 1.34
                 }
             ],
             "params": {
@@ -213,14 +213,14 @@
             "paths": [
                 {
                     "target": 10,
-                    "weight": 5
+                    "weight": 1.34
                 },
                 {
                     "target": 12,
-                    "weight": 1
+                    "weight": 1.34
                 },
                 {
-                    "target": 10,
+                    "target": 13,
                     "weight": 1
                 }
             ],
@@ -234,15 +234,11 @@
             "paths": [
                 {
                     "target": 9,
-                    "weight": 1
+                    "weight": 1.34
                 },
                 {
                     "target": 11,
-                    "weight": 1
-                },
-                {
-                    "target": 10,
-                    "weight": 1
+                    "weight": 1.34
                 }
             ],
             "params": {
@@ -255,11 +251,11 @@
             "paths": [
                 {
                     "target": 11,
-                    "weight": 2
+                    "weight": 1
                 },
                 {
                     "target": 14,
-                    "weight": 1
+                    "weight": 1.34
                 },
                 {
                     "target": 15,
@@ -267,7 +263,7 @@
                 },
                 {
                     "target": 16,
-                    "weight": 1
+                    "weight": 1.34
                 }
             ],
             "params": {
@@ -284,11 +280,11 @@
                 },
                 {
                     "target": 13,
-                    "weight": 1
+                    "weight": 1.34
                 },
                 {
                     "target": 15,
-                    "weight": 5
+                    "weight": 1.34
                 }
             ],
             "params": {
@@ -301,15 +297,15 @@
             "paths": [
                 {
                     "target": 14,
-                    "weight": 5
+                    "weight": 1.34
                 },
                 {
                     "target": 13,
-                    "weight": 2
+                    "weight": 1
                 },
                 {
                     "target": 16,
-                    "weight": 3
+                    "weight": 1.34
                 }
             ],
             "params": {
@@ -322,11 +318,11 @@
             "paths": [
                 {
                     "target": 13,
-                    "weight": 1
+                    "weight": 1.34
                 },
                 {
                     "target": 15,
-                    "weight": 3
+                    "weight": 1.34
                 }
             ],
             "params": {

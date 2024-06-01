@@ -79,11 +79,11 @@ func Disassemble(originalGraph graph.Graph, nodeChoser VertexChoseStrategy, endP
 			}
 		}
 
+		iterationWriter.Write(IterationChanges{RemovedNodes: removingNodes, RemovedEdges: iterationRemovedEdges, AddedEdges: iterationAddedEdges})
+
 		originalGraph.RemoveNodes(removingNodes)
 		originalGraph.RemoveEdges(removingEdges)
 		originalGraph.AddEdges(addingEdges)
-
-		iterationWriter.Write(IterationChanges{RemovedNodes: removingNodes, RemovedEdges: iterationRemovedEdges, AddedEdges: iterationAddedEdges})
 		//time.Sleep(2 + time.Second)
 	}
 }

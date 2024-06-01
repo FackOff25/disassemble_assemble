@@ -27,7 +27,9 @@ func RemoveNode(subgraph graph.Graph, node graph.Node) (removed []graph.Edge, ad
 			if neighbour2 == neighbour1 || neighbour2 < neighbour1 {
 				continue
 			}
+			//fmt.Printf("Triangle Nodes: removed: %d, 1: %d, 2: %d\n", node.Id, neighbour1, neighbour2)
 			removedFromTriangle, addedToTriatriangle := pruneTriangle(subgraph, node.Id, neighbour1, neighbour2)
+			//fmt.Printf("Triangle Edges: removed: %v, added: %v\n", removedFromTriangle, addedToTriatriangle)
 			removed = append(removed, removedFromTriangle...)
 			added = append(added, addedToTriatriangle...)
 		}

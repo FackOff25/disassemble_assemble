@@ -29,9 +29,8 @@ func errorCheck(err error) {
 
 func writeFloatMatrix(matrix [][]float64, file string) {
 	f, err := os.Create(file)
-	if err != nil {
-		panic(err)
-	}
+	errorCheck(err)
+	defer f.Close()
 
 	for i := range matrix {
 		str := fmt.Sprintf("%g", matrix[i][0])
@@ -41,12 +40,12 @@ func writeFloatMatrix(matrix [][]float64, file string) {
 		str += "\n"
 		f.WriteString(str)
 	}
-	f.Close()
 }
 
 func writeIntMatrix(matrix [][]int, file string) {
 	f, err := os.Create(file)
 	errorCheck(err)
+	defer f.Close()
 
 	for i := range matrix {
 		str := fmt.Sprintf("%d", matrix[i][0])
@@ -56,15 +55,15 @@ func writeIntMatrix(matrix [][]int, file string) {
 		str += "\n"
 		f.WriteString(str)
 	}
-	f.Close()
 }
 
 func makeIdToNum(graphConfig graph.Graph, idToNumFile string) disassemble.IdToNum {
 	idToNum := disassemble.MakeIdToNum(graphConfig)
 	m, err := os.Create(idToNumFile)
 	errorCheck(err)
+	defer m.Close()
+
 	m.WriteString(fmt.Sprintf("%v", idToNum))
-	m.Close()
 	return idToNum
 }
 
@@ -77,14 +76,18 @@ func doDisassemble(graphConfig graph.Graph, iterationFile, resultfile string, ex
 	randomChoser := disassemble.RandomChoser{ExcludeNodes: exclude}
 	ender := disassemble.NodeNumEnder{NodeNum: vertexLimit}
 	iterationWriter := disassemble.StringSliceWriter{Slice: slice}
+	//iterationWriter := disassemble.ConsoleIterationWriter{}
+	defer func() {
+		f.WriteString(iterationWriter.Slice[0])
+		f.Close()
+	}()
 
 	disassemble.Disassemble(graphConfig, randomChoser, ender, iterationWriter)
 
-	f.WriteString(iterationWriter.Slice[0])
-	f.Close()
-
 	r, err := os.Create(resultfile)
 	errorCheck(err)
+	defer r.Close()
+
 	byteStr, _ := json.Marshal(graphConfig)
 	r.Write(byteStr)
 }
@@ -92,6 +95,7 @@ func doDisassemble(graphConfig graph.Graph, iterationFile, resultfile string, ex
 func doAssemble(M [][]float64, P [][]int, graphConfig graph.Graph, idToNum disassemble.IdToNum, iterationFile, mMatrixFile, pMatrixFile string) {
 	f, err := os.Open(iterationFile)
 	errorCheck(err)
+	defer f.Close()
 	iterationReader := assemble.StraightScannerIterationReader{Reader: bufio.NewReader(f)}
 
 	remainNodes := make([]int, len(graphConfig.Nodes))
@@ -175,5 +179,6 @@ func main() {
 	doAssemble(M, P, graphConfig, idToNum, iterationFile, mMatrixFile, pMatrixFile)
 
 	reWritePmatrix(P, idToNum, "./results/P2.txt")
+	fmt.Printf("Dist: %g\n", M[idToNum[source]][idToNum[target]])
 	fmt.Println(makePath(P, source, target, idToNum))
 }
